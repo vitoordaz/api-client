@@ -1,0 +1,21 @@
+{
+  "name": "api",
+  "main": [
+    "dist/api.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:vitoordaz/api.git"
+  },
+  "dependencies": {
+    "jquery": "latest",
+    "underscore": "latest",
+    "abs-utils": "latest",
+    "chrome-localstorage": "latest"
+  },
+  "devDependencies": {
+    "requirejs": "latest",
+    "mocha": "latest",
+    "should": "latest"
+  }
+}
