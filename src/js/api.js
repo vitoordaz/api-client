@@ -29,7 +29,7 @@ define(['jquery', 'underscore', 'utils'], function($, _, utils) {
       data = undefined;
     }
     cb = cb || utils.noop;
-    var uri = this.config.server + path;
+    var uri = this.config.server + '/' + path;
     var opts = {
       type: method,
       complete: function(jqXHR, textStatus) {
