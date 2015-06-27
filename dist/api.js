@@ -1,5 +1,5 @@
 /* jshint strict: true */
-/* global define, console */
+/* global define */
 
 define('api',['jquery', 'underscore', 'utils'], function($, _, utils) {
   'use strict';
@@ -29,16 +29,16 @@ define('api',['jquery', 'underscore', 'utils'], function($, _, utils) {
       data = undefined;
     }
     cb = cb || utils.noop;
-    var uri = this.config.server + '/' + path;
+    var uri = this.config.server;
+    if (_.last(uri) !== '/') {
+      uri += '/';
+    }
+    uri += path;
     var opts = {
       type: method,
       complete: function(jqXHR, textStatus) {
         var status = jqXHR.status;
         var resp = jqXHR.responseJSON || {};
-        console.groupCollapsed('%s: %s %s %s (HTTP %s)', this.name, method,
-          uri, textStatus, status);
-        console.dir(resp);
-        console.groupEnd();
         if (textStatus === 'success' && 200 <= status && status < 300) {
           cb(null, resp);
         } else {
@@ -112,7 +112,6 @@ define('api',['jquery', 'underscore', 'utils'], function($, _, utils) {
       if (!err) {
         cb(null, data);
       } else {
-        console.error('Cannot load customer', err);
         cb(err);
       }
     }.bind(this));
