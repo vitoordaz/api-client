@@ -11219,6 +11219,17 @@ define('api',['jquery', 'underscore', 'utils'], function($, _, utils) {
   };
 
   /**
+   * Creates interaction object.
+   * @param {Object} data interaction data.
+   * @return {jQuery.Promise}
+   */
+  API.prototype.createInteraction = function(data) {
+    return this.request('POST', 'interaction/', data).then(function(result) {
+      return result;
+    });
+  };
+
+  /**
    * Gets current user script.
    * @param id {string} script id.
    * @param cb {function} callback function to call after script loaded.
