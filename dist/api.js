@@ -79,16 +79,12 @@ define('api',['jquery', 'underscore', 'utils'], function($, _, utils) {
    * Send authorization request to API.
    * @param data {{username: string, password: string}} authorization
    *                                                    credentials.
-   * @param cb {function} callback function to call after response received.
    */
-  API.prototype.auth = function(data, cb) {
-    cb = cb || utils.noop;
-    this.request('POST', 'auth/', data, function(err, data) {
-      if (!err) {
-        this.credentials = data;
-      }
-      cb(err, data);
-    }.bind(this));
+  API.prototype.auth = function(data) {
+    return this.request('POST', 'auth/', data).then(_.bind(function(data) {
+      this.credentials = data;
+      return data;
+    }, this));
   };
 
   /**
