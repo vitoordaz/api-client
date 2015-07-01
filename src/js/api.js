@@ -127,18 +127,18 @@ define(['jquery', 'underscore', 'utils'], function($, _, utils) {
 
   /**
    * Fetch current user data.
-   * @param cb {function} callback function to call after user data fetched.
+   * @return {jQuery.Promise}
    */
-  API.prototype.getUserSelf = function(cb) {
-    this.request('GET', 'user/self', cb || utils.noop);
+  API.prototype.getUserSelf = function() {
+    return this.request('GET', 'user/self');
   };
 
   /**
    * Fetch current user sales script.
-   * @param cb {function} callback function to call after sales script fetched.
+   * @return {jQuery.Promise}
    */
-  API.prototype.getUserSalesScript = function(cb) {
-    this.request('GET', 'user/self/script', cb || utils.noop);
+  API.prototype.getUserSalesScript = function() {
+    return this.request('GET', 'user/self/script');
   };
 
   return API;
