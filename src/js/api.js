@@ -7,12 +7,12 @@ define(['jquery', 'underscore', 'utils'], function($, _, utils) {
   /**
    * Base API class.
    * @param config {{server: string}} API client config.
-   * @param credentials {{key: string, secret: string}} API credentials.
    * @constructor
    */
-  function API(config, credentials) {
-    this.config = config;
-    this.credentials = credentials;
+  function API(config) {
+    this.config = $.extend({
+      server: 'https://api2.absdata.ru'
+    }, config || {});
     this.name = 'API';
   }
 
@@ -55,24 +55,27 @@ define(['jquery', 'underscore', 'utils'], function($, _, utils) {
       }
     }
     opts.timeout = 5000;  // 5s
-    this.authorizeRequest(path, opts);
-    return $.ajax(uri, opts);
+    return this.authorizeRequest(path, opts).then(function(opts) {
+      return $.ajax(uri, opts);
+    });
   };
 
   /**
    * API request authorization handler.
    * @param path {string} request path.
    * @param opts {{}} jQuery ajax request options.
+   * @returns {jQuery.Deferred}
    */
   API.prototype.authorizeRequest = function(path, opts) {
-    if (path !== 'auth/') {
-      var cred = this.credentials;
-      if (!!cred) {
-        opts.headers = opts.headers || {};
-        opts.headers.Authorization =
-          'user ' + window.btoa(cred.key + ':' + cred.secret);
-      }
+    if (path === 'auth/') {
+      return $.Deferred().resolve(opts);
     }
+    return utils.credentials.get().then(function(c) {
+      opts.headers = opts.headers || {};
+      opts.headers.Authorization =
+        'user ' + window.btoa(c.key + ':' + c.secret);
+      return opts;
+    });
   };
 
   /**
@@ -81,21 +84,16 @@ define(['jquery', 'underscore', 'utils'], function($, _, utils) {
    *                                                    credentials.
    */
   API.prototype.auth = function(data) {
-    return this.request('POST', 'auth/', data).then(_.bind(function(data) {
-      this.credentials = data;
-      return data;
-    }, this));
+    return this.request('POST', 'auth/', data);
   };
 
   /**
    * Creates interaction object.
    * @param {Object} data interaction data.
-   * @return {jQuery.Promise}
+   * @return {jQuery.Deferred}
    */
   API.prototype.createInteraction = function(data) {
-    return this.request('POST', 'interaction/', data).then(function(result) {
-      return result;
-    });
+    return this.request('POST', 'interaction/', data);
   };
 
   /**
@@ -127,7 +125,7 @@ define(['jquery', 'underscore', 'utils'], function($, _, utils) {
 
   /**
    * Fetch current user data.
-   * @return {jQuery.Promise}
+   * @return {jQuery.Deferred}
    */
   API.prototype.getUserSelf = function() {
     return this.request('GET', 'user/self');
@@ -135,7 +133,7 @@ define(['jquery', 'underscore', 'utils'], function($, _, utils) {
 
   /**
    * Fetch current user sales script.
-   * @return {jQuery.Promise}
+   * @return {jQuery.Deferred}
    */
   API.prototype.getUserSalesScript = function() {
     return this.request('GET', 'user/self/script');
