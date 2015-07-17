@@ -21,31 +21,17 @@ define(['jquery', 'underscore', 'utils'], function($, _, utils) {
    * @param method {string} HTTP method of request.
    * @param path {string} request URI path.
    * @param data {{}} request data.
-   * @param cb {function} callback function to call after response received.
    */
-  API.prototype.request = function(method, path, data, cb) {
-    if (typeof data === 'function') {
-      cb = data;
-      data = undefined;
-    }
-    cb = cb || utils.noop;
+  API.prototype.request = function(method, path, data) {
     var uri = this.config.server;
     if (_.last(uri) !== '/') {
       uri += '/';
     }
+    if (_.first(path) === '/') {
+      path = path.substr(1);
+    }
     uri += path;
-    var opts = {
-      type: method,
-      complete: function(jqXHR, textStatus) {
-        var status = jqXHR.status;
-        var resp = jqXHR.responseJSON || {};
-        if (textStatus === 'success' && 200 <= status && status < 300) {
-          cb(null, resp);
-        } else {
-          cb(resp, null);
-        }
-      }.bind(this)
-    };
+    var opts = {type: method};
     if (!_.isEmpty(data)) {
       if (method === 'GET') {
         opts.data = data;
@@ -99,27 +85,19 @@ define(['jquery', 'underscore', 'utils'], function($, _, utils) {
   /**
    * Gets current user script.
    * @param id {string} script id.
-   * @param cb {function} callback function to call after script loaded.
+   * @return {jQuery.Deferred}
    */
-  API.prototype.getScript = function(id, cb) {
-    this.request('GET', 'script/' + id, cb || utils.noop);
+  API.prototype.getScript = function(id) {
+    this.request('GET', 'script/' + id);
   };
 
   /**
    * Filter customers.
    * @param params {{}} query parameters.
-   * @param cb {function} callback function to call after customer data
-   *                      fetched.
+   * @return {jQuery.Deferred}
    */
-  API.prototype.listCustomers = function(params, cb) {
-    cb = cb || utils.noop;
-    this.request('GET', 'customer', params, function(err, data) {
-      if (!err) {
-        cb(null, data);
-      } else {
-        cb(err);
-      }
-    }.bind(this));
+  API.prototype.listCustomers = function(params) {
+    return this.request('GET', 'customer', params);
   };
 
 
