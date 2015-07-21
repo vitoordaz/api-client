@@ -11215,7 +11215,7 @@ define('api',['jquery', 'underscore', 'utils'], function($, _, utils) {
    * @return {jQuery.Deferred}
    */
   API.prototype.getScript = function(id) {
-    this.request('GET', 'script/' + id);
+    return this.request('GET', 'script/' + id);
   };
 
   /**
